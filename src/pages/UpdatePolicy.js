@@ -18,7 +18,8 @@ function UpdatePolicy() {
     });
 
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(true);
+    const [loading, setLoading] = useState(false);
+    const [loading_, setLoading_] = useState(true);
 
     const sanitizeDriver = (driver) => ({
         id: driver.id,
@@ -93,7 +94,7 @@ function UpdatePolicy() {
                 console.error('Failed to fetch policy', err);
                 alert('Could not load policy');
             } finally {
-                setLoading(false);
+                setLoading_(false);
             }
         };
 
@@ -174,6 +175,7 @@ function UpdatePolicy() {
         console.log('form data:', formData);
 
         try {
+            setLoading(true);
             await axios.get('/sanctum/csrf-cookie');
 
             await axios.put(`/api/policies/${id}`, formData);
@@ -189,6 +191,8 @@ function UpdatePolicy() {
                 console.error(error);
                 alert('Failed to update policy');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -208,7 +212,7 @@ function UpdatePolicy() {
         setFormData({ ...formData, vehicles: updatedVehicles });
     };
 
-    if (loading) return <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+    if (loading_) return <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
         <div className="spinner-border text-primary" role="status">
             <span className="visually-hidden">Loading...</span>
         </div>
@@ -226,6 +230,13 @@ function UpdatePolicy() {
 
     return (
         <div className="container py-4">
+            {loading && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            )}
             <h2 className="text-center mb-4">Update Policy</h2>
             <form onSubmit={handleSubmit}>
                 {/* Effective & Expiration Dates */}
@@ -408,7 +419,11 @@ function UpdatePolicy() {
                         )}
                     </div>
                 ))}
-
+                {Object.keys(errors).length > 0 && (
+                    <p className="text-danger text-center">
+                        Please review the form. Some fields are invalid or missing.
+                    </p>
+                )}
                 <button type="button" className="btn btn-outline-success mb-3" onClick={addVehicle}>Add Vehicle</button>
 
                 <div className="d-flex justify-content-between">
