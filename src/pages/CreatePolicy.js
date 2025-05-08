@@ -36,6 +36,7 @@ function CreatePolicy() {
     });
 
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleChange = (e, section, index, subfield, subindex) => {
         const { name, value } = e.target;
@@ -113,6 +114,7 @@ function CreatePolicy() {
         console.log(formData);
 
         try {
+            setLoading(true);
             await axios.get('/sanctum/csrf-cookie');
 
             const response = await axios.post('/api/policies', formData);
@@ -129,6 +131,8 @@ function CreatePolicy() {
                 console.error(error);
                 alert('Failed to create policy');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -150,6 +154,13 @@ function CreatePolicy() {
 
     return (
         <div className="container py-4">
+            {loading && (
+                <div className="position-fixed top-0 start-0 w-100 h-100 bg-white bg-opacity-75 d-flex justify-content-center align-items-center" style={{ zIndex: 1050 }}>
+                    <div className="spinner-border text-primary" role="status">
+                        <span className="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+            )}
             <h2 className="text-center mb-4">Create Policy</h2>
             <form onSubmit={handleSubmit}>
                 <div className="row">
@@ -351,6 +362,11 @@ function CreatePolicy() {
                         </div>
                     </div>
                 ))}
+                {Object.keys(errors).length > 0 && (
+                    <p className="text-danger text-center">
+                        Please review the form. Some fields are invalid or missing.
+                    </p>
+                )}
                 <button type="button" className="btn btn-outline-success mb-3" onClick={addVehicle}>Add Vehicle</button>
 
                 <div className="d-flex justify-content-between">
