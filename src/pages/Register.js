@@ -57,6 +57,8 @@ const Register = ({ setUser }) => {
             } else {
                 setError('Registration failed. Please try again.');
             }
+        } finally {
+            setLoading(false);
         }
     };
 
