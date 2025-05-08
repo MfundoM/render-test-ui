@@ -5,7 +5,6 @@ import { useNavigate, Link } from 'react-router-dom';
 const Login = ({ setUser }) => {
     const [form, setForm] = useState({ email: '', password: '' });
     const [error, setError] = useState('');
-    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const handleChange = (event) => {
@@ -49,16 +48,8 @@ const Login = ({ setUser }) => {
             } else {
                 setError('Login failed. Please try again.');
             }
-        } finally {
-            setLoading(false);
         }
     };
-
-    if (loading) return <div className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-        <div className="spinner-border text-primary" role="status">
-            <span className="visually-hidden">Loading...</span>
-        </div>
-    </div>;
 
     return (
         <div className="container d-flex justify-content-center align-items-center" style={{ minHeight: '100vh' }}>
